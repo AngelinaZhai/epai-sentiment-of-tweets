@@ -25,10 +25,22 @@ Brief description of what the function does
 
 Example:
 ```
-# print_string(string input)
+# print_string(input)
 # param: input:string
 # return: void
 # Prints the string input to console
 def print_string(input):
     print(input)
 ```
+
+<h3> Git Commit Messages </h3>
+
+- **Title**: A succinct summary of what changes you made and where they were
+  - "Fixed minor bugs in the foward-pass loop" – Good! 👍
+  - “Made some changes” – Bad! 👎 DO NOT DO THIS! >:(
+- **Description** (optional for small changes, _required for major commits_): Talk more in-depth about what you did, and what needs to be worked on next
+```
+- Tried out different activation functions, decided on RELU
+- Need to plug function into training to see if results are improved
+```
+  
