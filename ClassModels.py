@@ -14,19 +14,26 @@ WORD2VEC = gensim.downloader.load("word2vec-google-news-300")
 
 class Tweet_RNN(nn.Module):
     """
-    The class object for the RNN
+    The class object for the RNN.
+
+    Attributes:
+    emb: the type of embedding
+    hidden_size: the number of layers
+    nn: the actual neural network
+    fc: the activation layer
     """
+
     # Tweet_RNN.__init__(self, input_size, hidden_size, num_classes)
     # param: self:Tweet_RNN
     # param: input_size:int
     # param: hidden_size:int
     # param: num_classes:int
-    # param: embedding:string
+    # param: embedding:str
     #    the string should be either: "glove", "word2vec" or "none"
     #    and correspond to the desired embedding
     # return: void
     # initializes the RNN
-    def __init__(self, input_size, hidden_size, num_classes, embedding):
+    def __init__(self, input_size: int, hidden_size: int, num_classes: int, embedding: str) -> None:
         super(Tweet_RNN, self).__init__()
         if embedding == "glove":
             self.emb = nn.Embedding.from_pretrained(GLOVE.vectors)
@@ -35,34 +42,91 @@ class Tweet_RNN(nn.Module):
         else:
             self.emb = nn.Embedding(input_size, num_classes)
         self.hidden_size = hidden_size
-        self.rnn = nn.RNN(input_size, hidden_size, batch_first=True)
+        self.nn = nn.RNN(input_size, hidden_size, batch_first=True)
         self.fc = nn.Sigmoid()
 
     # forward(self, x)
     # param: self:Tweet_RNN
     # param: x:torch.FloatTensor
     # initializes the RNN
-    def forward(self, x):
+    def forward(self, x: torch.FloatTensor) -> torch.FloatTensor:
         # Look up the embedding
         x = self.emb(x)
         # Set an initial hidden state
         h0 = torch.zeros(1, x.size(0), self.hidden_size)
         # Forward propagate the RNN
-        out, _ = self.rnn(x, h0)
+        out, _ = self.nn(x, h0)
         # Pass the output of the last time step to the classifier
         out = self.fc(out[:, -1, :])
         return out
 
-class Tweet_LSTM(nn.Module):
+
+class Tweet_BiRNN(nn.Module):
     """
-    The class object for the LSTM
+    The class object for the BiRNN.
+
+    Attributes:
+    emb: the type of embedding
+    hidden_size: the number of layers
+    nn: the actual neural network
+    fc: the activation layer
     """
-    # Tweet_RNN.__init__(self, input_size, hidden_size, num_classes)
-    # param: self:Tweet_RNN
+
+    # Tweet_BiRNN.__init__(self, input_size, hidden_size, num_classes)
+    # param: self:Tweet_BiRNN
     # param: input_size:int
     # param: hidden_size:int
     # param: num_classes:int
-    # param: embedding:string
+    # param: embedding:str
+    #    the string should be either: "glove", "word2vec" or "none"
+    #    and correspond to the desired embedding
+    # return: void
+    # initializes the BiRNN
+    def __init__(self, input_size: int, hidden_size: int, num_classes: int, embedding: str) -> None:
+        super(Tweet_BiRNN, self).__init__()
+        if embedding == "glove":
+            self.emb = nn.Embedding.from_pretrained(GLOVE.vectors)
+        elif embedding == "word2vec":
+            self.emb = nn.Embedding.from_pretrained(WORD2VEC)
+        else:
+            self.emb = nn.Embedding(input_size, num_classes)
+        self.hidden_size = hidden_size
+        self.nn = nn.RNN(input_size, hidden_size, batch_first=True, bidirectional=True)
+        self.fc = nn.Sigmoid()
+
+    # forward(self, x)
+    # param: self:Tweet_BiRNN
+    # param: x:torch.FloatTensor
+    # initializes the BiRNN
+    def forward(self, x: torch.FloatTensor) -> torch.FloatTensor:
+        # Look up the embedding
+        x = self.emb(x)
+        # Set an initial hidden state
+        h0 = torch.zeros(1, x.size(0), self.hidden_size)
+        # Forward propagate the RNN
+        out, _ = self.nn(x, h0)
+        # Pass the output of the last time step to the classifier
+        out = self.fc(out[:, -1, :])
+        return out
+
+
+class Tweet_LSTM(nn.Module):
+    """
+    The class object for the LSTM.
+
+    Attributes:
+    emb: the type of embedding
+    hidden_size: the number of layers
+    nn: the actual neural network
+    fc: the activation layer
+    """
+
+    # Tweet_LSTM.__init__(self, input_size, hidden_size, num_classes)
+    # param: self:Tweet_LSTM
+    # param: input_size:int
+    # param: hidden_size:int
+    # param: num_classes:int
+    # param: embedding:str
     #    the string should be either: "glove", "word2vec" or "none"
     #    and correspond to the desired embedding
     # return: void
@@ -76,22 +140,123 @@ class Tweet_LSTM(nn.Module):
         else:
             self.emb = nn.Embedding(input_size, num_classes)
         self.hidden_size = hidden_size
-        self.rnn = nn.LSTM(input_size, hidden_size, batch_first=True)
+        self.nn = nn.LSTM(input_size, hidden_size, batch_first=True)
         self.fc = nn.Sigmoid()
 
     # forward(self, x)
-    # param: self:Tweet_RNN
+    # param: self:Tweet_LSTM
     # param: x:torch.FloatTensor
     # return: out:torch.FloatTensor
-    # initializes the RNN
-    def forward(self, x):
+    # initializes the LSTM
+    def forward(self, x: torch.FloatTensor) -> torch.FloatTensor:
         # Look up the embedding
         x = self.emb(x)
         # Set an initial hidden state and cell state
         h0 = torch.zeros(1, x.size(0), self.hidden_size)
         c0 = torch.zeros(1, x.size(0), self.hidden_size)
         # Forward propagate the LSTM
-        out, _ = self.rnn(x, (h0, c0))
+        out, _ = self.nn(x, (h0, c0))
+        # Pass the output of the last time step to the classifier
+        out = self.fc(out[:, -1, :])
+        return out
+
+
+class Tweet_BiLSTM(nn.Module):
+    """
+    The class object for the BiLSTM.
+
+    Attributes:
+    emb: the type of embedding
+    hidden_size: the number of layers
+    nn: the actual neural network
+    fc: the activation layer
+    """
+
+    # Tweet_BiLSTM.__init__(self, input_size, hidden_size, num_classes)
+    # param: self:Tweet_BiLSTM
+    # param: input_size:int
+    # param: hidden_size:int
+    # param: num_classes:int
+    # param: embedding:str
+    #    the string should be either: "glove", "word2vec" or "none"
+    #    and correspond to the desired embedding
+    # return: void
+    # initializes the BiLSTM
+    def __init__(self, input_size: int, hidden_size: int, num_classes: int, embedding: str) -> None:
+        super(Tweet_BiLSTM, self).__init__()
+        if embedding == "glove":
+            self.emb = nn.Embedding.from_pretrained(GLOVE.vectors)
+        elif embedding == "word2vec":
+            self.emb = nn.Embedding.from_pretrained(WORD2VEC)
+        else:
+            self.emb = nn.Embedding(input_size, num_classes)
+        self.hidden_size = hidden_size
+        self.nn = nn.LSTM(input_size, hidden_size, batch_first=True, bidirectional=True)
+        self.fc = nn.Sigmoid()
+
+    # forward(self, x)
+    # param: self:Tweet_BiLSTM
+    # param: x:torch.FloatTensor
+    # return: out:torch.FloatTensor
+    # initializes the BiLSTM
+    def forward(self, x: torch.FloatTensor) -> torch.FloatTensor:
+        # Look up the embedding
+        x = self.emb(x)
+        # Set an initial hidden state and cell state
+        h0 = torch.zeros(1, x.size(0), self.hidden_size)
+        c0 = torch.zeros(1, x.size(0), self.hidden_size)
+        # Forward propagate the BiLSTM
+        out, _ = self.nn(x, (h0, c0))
+        # Pass the output of the last time step to the classifier
+        out = self.fc(out[:, -1, :])
+        return out
+
+class Tweet_GRU(nn.Module):
+    """
+    The class object for the GRU.
+
+    Attributes:
+    emb: the type of embedding
+    hidden_size: the number of layers
+    nn: the actual neural network
+    fc: the activation layer
+    """
+
+    # Tweet_GRU.__init__(self, input_size, hidden_size, num_classes)
+    # param: self:Tweet_GRU
+    # param: input_size:int
+    # param: hidden_size:int
+    # param: num_classes:int
+    # param: embedding:str
+    #    the string should be either: "glove", "word2vec" or "none"
+    #    and correspond to the desired embedding
+    # return: void
+    # initializes the GRU
+    def __init__(self, input_size: int, hidden_size: int, num_classes: int, embedding: str) -> None:
+        super(Tweet_GRU, self).__init__()
+        if embedding == "glove":
+            self.emb = nn.Embedding.from_pretrained(GLOVE.vectors)
+        elif embedding == "word2vec":
+            self.emb = nn.Embedding.from_pretrained(WORD2VEC)
+        else:
+            self.emb = nn.Embedding(input_size, num_classes)
+        self.hidden_size = hidden_size
+        self.nn = nn.GRU(input_size, hidden_size, batch_first=True)
+        self.fc = nn.Sigmoid()
+
+    # forward(self, x)
+    # param: self:Tweet_GRU
+    # param: x:torch.FloatTensor
+    # return: out:torch.FloatTensor
+    # initializes the GRU
+    def forward(self, x: torch.FloatTensor) -> torch.FloatTensor:
+        # Look up the embedding
+        x = self.emb(x)
+        # Set an initial hidden state and cell state
+        h0 = torch.zeros(1, x.size(0), self.hidden_size)
+        c0 = torch.zeros(1, x.size(0), self.hidden_size)
+        # Forward propagate the GRU
+        out, _ = self.nn(x, (h0, c0))
         # Pass the output of the last time step to the classifier
         out = self.fc(out[:, -1, :])
         return out
