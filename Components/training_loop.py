@@ -1,4 +1,4 @@
-import datasets 
+import datasets
 
 import numpy as np
 import os
@@ -16,10 +16,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.metrics import classification_report
 from torch.nn.utils.rnn import pad_sequence
+import pandas as pd
 
-if torch.cuda.is_available():  
+if torch.cuda.is_available():
   use_cuda = True
-else:  
+else:
   use_cuda = False
 
 ###############################################################################
@@ -69,7 +70,7 @@ def plot_training_curve(path):
     plt.legend(loc='best')
     plt.show()
 
-    
+
     def get_accuracy(net, loader, label_names):
     for i, data in enumerate(loader, 0):
         inputs, labels = data
@@ -87,7 +88,53 @@ def plot_training_curve(path):
         )
     return
 
-  ###############################################################################
+
+def get_confusion_matrix(net: nn.Module, loader: torch.utils.data.DataLoader, label: str):
+    """
+    Returns the relevant confusion matrix corresponding to the input model and label
+    :param net: the model being tested
+    :param loader: the test data
+    :param label: the label being predicted
+
+    NOTE: the label must be in the list ["sentiment", "respect", "insult",
+            "humiliate", "status", "dehumanize", "violence", "genocide"
+            "attack_defend"]
+    """
+    index = {"sentiment": 0, "respect": 1, "insult": 2, "humiliate": 3, "status": 4,
+             "dehumanize": 5, "violence": 6, "genocide": 7, "attack_defend": 8}
+
+    actual = []
+    predicted = []
+    relevant_index = index[label]
+
+    # get actual stuff
+    for _, data in enumerate(loader, 0):
+        inputs, labels = data
+        curr_tensor = torch.FloatTensor(inputs)
+
+        actual_value = labels[relevant_index]  # how do I get the actual stuff
+        predicted_value = (net.forward(curr_tensor))[relevant_index]
+
+        # using 0.5 cutoff
+
+        if actual_value > 0.5:
+            actual.append(1)
+        else:
+            actual.append(0)
+
+        if predicted_value > 0.5:
+            predicted.append(1)
+        else:
+            predicted.append(0)
+
+    # make confusion matrix
+    for i in range(len(actual)):
+        actual[i] = pd.Series(actual[i], name=('Actual ' + label))
+        predicted[i] = pd.Series(predicted[i], name=('Predicted ' + label))
+        print(pd.crosstab(actual[i], predicted[i]))
+
+
+###############################################################################
 def evaluate(net, loader, criterion):
     """ Evaluate the network on the validation set.
 
@@ -111,7 +158,7 @@ def evaluate(net, loader, criterion):
         loss.backward()
     return_loss = float(loss)
     return return_loss
-   
+
 def train_net(net, train_loader, val_loader, batch_size=150, learning_rate=0.005, num_epochs=6):
     # Define the Loss function and optimizer
     # Optimizer will be SGD with Momentum.
