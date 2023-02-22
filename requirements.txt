@@ -1,0 +1,9 @@
+datasets
+langdetect
+pandas
+numpy
+matplotlib
+torch
+tensorflow
+torchsummary
+scikit-learn
