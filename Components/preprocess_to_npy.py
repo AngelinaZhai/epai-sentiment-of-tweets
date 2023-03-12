@@ -49,5 +49,7 @@ df_spliced = df_spliced.drop('sentiment', axis=1)
 df_spliced = df_spliced.drop('hatespeech', axis=1)
 df_spliced = df_spliced.drop('hate_speech_score', axis=1)
 
-#save df_spliced to npy file
+#save the dataframe to a npy file, save column names to a txt file
 np.save('hate_speech_spliced.npy', df_spliced.to_numpy())
+np.savetxt('hate_speech_spliced_col_names.txt', df_spliced.columns.values, fmt='%s')
+
