@@ -34,3 +34,22 @@ tmp_np_arr = df_norm.to_numpy()
 
 #save numpy array to file
 np.save('hate_speech.npy', tmp_np_arr)
+
+#load numpy array from file
+tmp_np_arr = np.load('hate_speech.npy', allow_pickle=True)
+
+#convert to pandas dataframe
+df.drop(df.iloc[:, 15:131], inplace=True, axis=1)
+df_tmp = df.drop(["annotator_id"], axis=1)
+df_norm = pd.DataFrame(tmp_np_arr, columns=df_tmp.columns)
+
+df_spliced = df_norm.drop('comment_id', axis=1)
+df_spliced = df_spliced.drop('platform', axis=1)
+df_spliced = df_spliced.drop('sentiment', axis=1)
+df_spliced = df_spliced.drop('hatespeech', axis=1)
+df_spliced = df_spliced.drop('hate_speech_score', axis=1)
+
+#save the dataframe to a npy file, save column names to a txt file
+np.save('hate_speech_spliced.npy', df_spliced.to_numpy())
+np.savetxt('hate_speech_spliced_col_names.txt', df_spliced.columns.values, fmt='%s')
+
