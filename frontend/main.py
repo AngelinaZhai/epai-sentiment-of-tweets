@@ -4,9 +4,12 @@
 
 import tkinter as tk
 from tkmacosx import Button as button #should be cross platform
+import torch
+import os
+import pickle
 
 
-theme = 1
+theme = 2
 
 if theme == 1: #light theme
     TEXTBOX_COLOUR = "#ebfcff"
@@ -48,6 +51,11 @@ class App(tk.Frame):
         #create event handler for button
         self.button["command"] = self.button_click
 
+        #import model.pth
+        self.model = torch.load("model.pth")
+
+        #load in lists for words + indices
+        self.load_word_arrays()
 
     def create_widgets(self):
         #change the title of the window
@@ -128,6 +136,14 @@ class App(tk.Frame):
         else:
             self.button["state"] = "normal"
         return count
+    
+    #retrieve output from model using the text 
+    def get_output(self, text):
+        #convert text to tensor
+        tensor = self.text_to_tensor(text)
+        #get output from model
+        output = self.model(tensor)
+        print (output)
 
     #disable button if character count is greater than 280
     def disable_button(self, event=None):
@@ -149,7 +165,31 @@ class App(tk.Frame):
         else:
             self.button["state"] = "normal"
             self.update_panel()
+            # self.get_output(self.textbox.get("1.0", "end"))
+            print(self.textbox.get("1.0", "end"))
 
+
+    def load_word_arrays(self):
+        index_to_word = []
+        word_to_index = []
+
+        #create appropriate paths
+        iw_loc = os.path.realpath(os.path.join(os.getcwd(), 'frontend\\index_to_word.pkl'))
+        with open(iw_loc, 'rb') as f:
+            while True:
+                try:
+                    index_to_word.append(pickle.load(f))
+                except EOFError:
+                    break
+
+        # with open('word_to_index.pkl', 'rb') as f:
+        #     while True:
+        #         try:
+        #             word_to_index.append(pickle.load(f))
+        #         except EOFError:
+        #             break
+        print(index_to_word)
+        print(word_to_index)
 
 
 root = tk.Tk()
