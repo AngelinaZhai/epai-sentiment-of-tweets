@@ -5,9 +5,9 @@
 import tkinter as tk
 from tkmacosx import Button as button #should be cross platform
 import torch
+import torch.nn as nn
 import os
 import pickle
-
 
 theme = 2
 
@@ -51,11 +51,17 @@ class App(tk.Frame):
         #create event handler for button
         self.button["command"] = self.button_click
 
-        #import model.pth
-        self.model = torch.load("model.pth")
-
         #load in lists for words + indices
+        self.index_to_word = {}
+        self.word_to_index = {}
         self.load_word_arrays()
+
+        #load pretrained model
+        model_path = os.path.realpath(os.path.join(os.getcwd(), 'frontend\\model.pth'))
+        self.model = self.load_network()
+        self.model.load_state_dict(torch.load(model_path))
+        self.model.eval
+
 
     def create_widgets(self):
         #change the title of the window
@@ -153,8 +159,11 @@ class App(tk.Frame):
             self.button["state"] = "normal"
 
     # update text in panel when user clicks button
-    def update_panel(self):
-        text = "{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n".format('--', '--', '--', '--', '--', '--', '--', '--')
+    def update_panel(self, results):
+        #multiply and round all entries of the results array
+        results = [str(round(i * 100, 2)) for i in results]
+        # text = "{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n".format('--', '--', '--', '--', '--', '--', '--', '--')
+        text = "{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n".format(results[0], results[1], results[2], results[3], results[4], results[5], results[6], results[7])
         self.result_text = tk.Label(self.panel, text=text, bg=PANEL_COLOUR, fg=PANEL_TEXT_COLOUR, font=FONT, justify="right")
         self.result_text.grid(row=1, column=1, sticky="e", padx=15)
 
@@ -164,33 +173,130 @@ class App(tk.Frame):
             self.button["state"] = "disabled"
         else:
             self.button["state"] = "normal"
-            self.update_panel()
+            scores = self.predict_sentiment(self.model, self.textbox.get("1.0", "end"))
+            self.update_panel(scores)
             # self.get_output(self.textbox.get("1.0", "end"))
-            print(self.textbox.get("1.0", "end"))
+            # print(self.textbox.get("1.0", "end"))
 
 
     def load_word_arrays(self):
-        index_to_word = []
-        word_to_index = []
-
         #create appropriate paths
         iw_loc = os.path.realpath(os.path.join(os.getcwd(), 'frontend\\index_to_word.pkl'))
+        wi_loc = os.path.realpath(os.path.join(os.getcwd(), 'frontend\\word_to_index.pkl'))
+
         with open(iw_loc, 'rb') as f:
             while True:
                 try:
-                    index_to_word.append(pickle.load(f))
+                    # index_to_word.append(pickle.load(f))
+                    self.index_to_word = pickle.load(f)
                 except EOFError:
                     break
 
-        # with open('word_to_index.pkl', 'rb') as f:
-        #     while True:
-        #         try:
-        #             word_to_index.append(pickle.load(f))
-        #         except EOFError:
-        #             break
-        print(index_to_word)
-        print(word_to_index)
+        with open(wi_loc, 'rb') as f:
+            while True:
+                try:
+                    # word_to_index.append(pickle.load(f))
+                    self.word_to_index = pickle.load(f)
+                except EOFError:
+                    break
 
+        print("Successfully loaded info arrays.")
+
+
+    def load_network(self):
+        NETWORK_TYPE = 'GRU' #specify the specific network type
+        INPUT_DIM=int(len(self.word_to_index)) #size of the vocabulary (number of words, arbitrary, but 10k is a good number)
+        # EMBEDDING_DIM = 8 #size of the word embeddings
+        EMBEDDING_DIM = 256
+        # HIDDEN_DIM = 8 #size of the hidden layer
+        HIDDEN_DIM = 100
+        OUTPUT_DIM = 8 #size of the output layer. Fixed to 8 for this project
+        N_LAYERS = 2 #number of stacked RNN type layers. Please note that this is not the number of layers in the network. Only use 1 or 2 or else the network becomes too complex
+        BIDIRECTIONAL = True #whether to use a bidirectional network
+        DROPOUT = 0.35 
+        return NETWORK(NETWORK_TYPE, INPUT_DIM, EMBEDDING_DIM, HIDDEN_DIM, OUTPUT_DIM, N_LAYERS, BIDIRECTIONAL, DROPOUT)
+
+
+    def split_tweet(self, tweet):
+        # separate punctuations
+        tweet = tweet.replace(".", " . ") \
+                    .replace(",", " , ") \
+                    .replace(";", " ; ") \
+                    .replace("?", " ? ")
+        return tweet.lower().split()
+
+    def predict_sentiment(self, net, sentence):
+        idxs = [self.word_to_index[w]        # lookup the index of word
+                        for w in self.split_tweet(sentence)
+                        if w in self.word_to_index] # keep words that has an embedding
+        # print(idxs)
+        tensor = torch.tensor(idxs)  # convert sentence to tensor
+        tensor = tensor.unsqueeze(0)  # change shape from [n_words] to [n_words, 1]
+        output = net(tensor)  # get predictions from network
+        #convert to probabilities
+        output = torch.sigmoid(output)
+        
+        return output.tolist()[0]
+
+
+class NETWORK(nn.Module):
+    """
+    The class object for the model network.
+    Attributes:
+    emb: the type of embedding
+    hidden_size: the number of layers
+    nn: the actual neural network
+    fc: the activation layer
+    """
+
+    # param: type:str
+    # param: vocab_size:int
+    # param: embedding_dim:int
+    # param: hidden_dim:int
+    # param: output_dim:int
+    # param: n_layers:int
+    # param: bidirectional:bool
+    # param: dropout:float
+    # return: void
+    # initializes the neural network with the given parameters
+    def __init__(self, type, vocab_size, embedding_dim, hidden_dim, output_dim, n_layers, bidirectional, dropout):
+        super().__init__()
+        self.embedding = nn.Embedding(vocab_size, embedding_dim)
+        self.type = type
+        if self.type == "RNN":
+            self.rnn = nn.RNN(embedding_dim, hidden_dim, num_layers=n_layers, bidirectional=bidirectional, dropout=dropout, batch_first=True)
+        elif self.type == "GRU":
+            self.rnn = nn.GRU(embedding_dim, hidden_dim, num_layers=n_layers, bidirectional=bidirectional, dropout=dropout, batch_first=True)
+        elif self.type == "LSTM":
+            self.rnn = nn.LSTM(embedding_dim, hidden_dim, num_layers=n_layers, bidirectional=bidirectional, dropout=dropout, batch_first=True)
+        else:
+            raise Exception("Invalid RNN type")
+        self.layers = n_layers
+        self.fc = nn.Linear(hidden_dim*n_layers, 256)
+        self.fc1 = nn.Linear(256, 64)
+        self.fc2 = nn.Linear(64, output_dim)
+        # self.fc_out = nn.Linear(hidden_dim*(2 if bidirectional else 1), output_dim)
+        self.relu = nn.ReLU()
+        self.dropout = nn.Dropout(dropout)
+        
+    # param: text:torch.Tensor
+    # return: torch.Tensor
+    # forward pass of the neural network
+    def forward(self, text):
+        # embedded = self.dropout(self.embedding(text))
+        embedded = self.embedding(text)
+        if self.type == "LSTM":
+            output, (hidden, cell) = self.rnn(embedded)
+        elif self.type == "GRU":
+            output, hidden = self.rnn(embedded)
+        # hidden = self.dropout(torch.cat((hidden[-2,:,:], hidden[-1,:,:]), dim = 1))
+        if self.layers == 1:
+           hidden = self.dropout(hidden[0:,:])
+        else:
+            hidden = self.dropout(torch.cat((hidden[-2,:,:], hidden[-1,:,:]), dim = 1))
+        hidden = self.relu(self.fc(hidden))
+        hidden = self.relu(self.fc1(hidden))
+        return self.fc2(hidden)
 
 root = tk.Tk()
 app = App(master=root)
