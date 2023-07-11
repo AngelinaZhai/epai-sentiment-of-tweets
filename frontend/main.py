@@ -225,8 +225,8 @@ class App(tk.Frame):
 
     def load_word_arrays(self):
         #create appropriate paths
-        iw_loc = os.path.realpath(os.path.join(os.getcwd(), 'frontend\\index_to_word.pkl'))
-        wi_loc = os.path.realpath(os.path.join(os.getcwd(), 'frontend\\word_to_index.pkl'))
+        iw_loc = os.path.realpath(os.path.join(os.getcwd(), 'index_to_word.pkl'))
+        wi_loc = os.path.realpath(os.path.join(os.getcwd(), 'word_to_index.pkl'))
 
         with open(iw_loc, 'rb') as f:
             while True:
