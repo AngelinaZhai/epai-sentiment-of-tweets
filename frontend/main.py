@@ -9,31 +9,6 @@ import torch.nn as nn
 import os
 import pickle
 
-theme = 2
-
-if theme == 1: #light theme
-    TEXTBOX_COLOUR = "#ebfcff"
-    TEXTBOX_BORDER = "#317f8c"
-    TEXTBOX_TEXT_COLOUR = "#353A3F"
-    BUTTON_COLOUR = "#c73e08"
-    BUTTON_TEXT_COLOUR = "#FFFFFF"
-    PANEL_COLOUR = "#FFFFFF"
-    PANEL_TEXT_COLOUR = "#c73e08"
-
-elif theme == 2: #dark theme
-    TEXTBOX_COLOUR = "#eff3f4"
-    # TEXTBOX_COLOUR = "#081f30"
-    TEXTBOX_BORDER = "#1d9bf0"
-    TEXTBOX_TEXT_COLOUR = "#18222e"
-    BUTTON_COLOUR = "#f75b2f"
-    BUTTON_TEXT_COLOUR = '#ffffff'
-    PANEL_COLOUR = "#243447"
-    PANEL_TEXT_COLOUR = "#ffffff"
-    
-
-FONT = ("Cambria", 12)
-TTLE_FONT = ("Cambria", 16)
-
 
 class App(tk.Frame):
     def __init__(self, master=None):
@@ -42,8 +17,8 @@ class App(tk.Frame):
         #ensure window is not resizable
         self.master.resizable(False, False)
         self.pack()
+        self.create_menu()
         self.create_widgets()
-        # self.count_text()
 
         #create event handler for textbox
         self.textbox.bind("<Key>", self.count_text)
@@ -62,12 +37,66 @@ class App(tk.Frame):
         self.model.load_state_dict(torch.load(model_path))
         self.model.eval
 
+    def create_menu(self):
+        self.menubar = tk.Menu(self.master)
+        self.master.config(menu=self.menubar)
+        
+        visualMenu = tk.Menu(self.menubar, tearoff=0)
+        visualMenu.add_command(label = "Light Mode", command = self.to_light)
+        visualMenu.add_command(label = "Dark Mode", command = self.to_dark)
+        self.menubar.add_cascade(label = "Appearance", menu = visualMenu)
+
+    def to_light(self):
+        global theme
+        
+        if theme == 1:
+            return
+        else:
+            theme = 1
+            self.destroy()
+            self.__init__(self.master)
+
+    def to_dark(self):
+        global theme
+        
+        if theme == 2:
+            return
+        else:
+            theme = 2
+            self.destroy()
+            self.__init__(self.master)
 
     def create_widgets(self):
+
+        #calling global variables
+        # global textbox_colour, textbox_border, textbox_text_colour, button_colour, button_text_colour, panel_colour, panel_text_colour
+        global theme
+
+        if theme == 1: #light theme
+            textbox_colour = "#ebfcff"
+            textbox_border = "#317f8c"
+            textbox_text_colour = "#353A3F"
+            button_colour = "#c73e08"
+            button_text_colour = "#FFFFFF"
+            panel_colour = "#FFFFFF"
+            panel_text_colour = "#c73e08"
+
+        elif theme == 2: #dark theme
+            textbox_colour = "#eff3f4"
+            # TEXTBOX_COLOUR = "#081f30"
+            textbox_border = "#1d9bf0"
+            textbox_text_colour = "#18222e"
+            button_colour = "#f75b2f"
+            button_text_colour = '#ffffff'
+            panel_colour = "#243447"
+            panel_text_colour = "#ffffff"
+
+
+
         #change the title of the window
         self.master.title("Twitter Sentiment Analysis")
 
-        self.textbox = tk.Text(self, width=48, fg = TEXTBOX_TEXT_COLOUR, bg=TEXTBOX_COLOUR, font=FONT)
+        self.textbox = tk.Text(self, width=48, fg = textbox_text_colour, bg=textbox_colour, font=FONT)
         self.textbox.grid(row=0, column=0, columnspan=2, rowspan=3, sticky = "nsew", padx = 1)
 
 
@@ -77,7 +106,7 @@ class App(tk.Frame):
 
 
         #create a button
-        self.button = button(self, text="Analyze", command=self.print_text, bg=BUTTON_COLOUR, highlightbackground=PANEL_COLOUR, fg=BUTTON_TEXT_COLOUR, font=FONT, borderless=1)
+        self.button = button(self, text="Analyze", command=self.print_text, bg=button_colour, highlightbackground=panel_colour, fg=button_text_colour, font=FONT, borderless=1)
         #configure the button to be in the 4th row and 0th column, on the left side
         self.button.grid(row=4, column=1, sticky="e", pady=5)
 
@@ -96,29 +125,29 @@ class App(tk.Frame):
         #create a string to display classification labels in the panel
         text = "Respect: \n\nInsult: \n\nHumiliate: \n\nStatus: \n\nDehumanize:\n\nViolence:\n\nGenocide:\n\nAttack Defend:\n\n"
         #create a label to display the text
-        self.panel_text = tk.Label(self.panel, text=text, bg=PANEL_COLOUR, fg=PANEL_TEXT_COLOUR, font=FONT, justify="left")
+        self.panel_text = tk.Label(self.panel, text=text, bg=panel_colour, fg=panel_text_colour, font=FONT, justify="left")
         #add the label to the panel
         self.panel_text.grid(row=1, column=0, sticky="w", padx=15)
 
 
         #set background color of elements
-        self["bg"] = PANEL_COLOUR
+        self["bg"] = panel_colour
 
-        self.label["bg"] = PANEL_COLOUR
-        self.label["fg"] = PANEL_TEXT_COLOUR
+        self.label["bg"] = panel_colour
+        self.label["fg"] = panel_text_colour
         self.label["font"] = FONT
 
-        self.textbox["bg"] = TEXTBOX_COLOUR
-        self.textbox["highlightbackground"] = TEXTBOX_BORDER
-        self.textbox["fg"] = TEXTBOX_TEXT_COLOUR
+        self.textbox["bg"] = textbox_colour
+        self.textbox["highlightbackground"] = textbox_border
+        self.textbox["fg"] = textbox_text_colour
         self.textbox["highlightthickness"] = 3
         self.textbox["borderwidth"] = 15 #padding around the text inside the textbox
         self.textbox["font"] = FONT
 
-        self.panel["bg"] = PANEL_COLOUR
+        self.panel["bg"] = panel_colour
 
-        self.panel_title["bg"] = PANEL_COLOUR
-        self.panel_title["fg"] = PANEL_TEXT_COLOUR
+        self.panel_title["bg"] = panel_colour
+        self.panel_title["fg"] = panel_text_colour
         self.panel_title["font"] = TTLE_FONT
 
 
@@ -126,6 +155,7 @@ class App(tk.Frame):
     def print_text(self):
         text = self.textbox.get("1.0", "end")
         self.count_text()
+
 
     #update counter as the user types
     def count_text(self, event=None):
@@ -143,6 +173,7 @@ class App(tk.Frame):
             self.button["state"] = "normal"
         return count
     
+
     #retrieve output from model using the text 
     def get_output(self, text):
         #convert text to tensor
@@ -151,6 +182,7 @@ class App(tk.Frame):
         output = self.model(tensor)
         print (output)
 
+
     #disable button if character count is greater than 280
     def disable_button(self, event=None):
         if self.count_text() > 280:
@@ -158,14 +190,28 @@ class App(tk.Frame):
         else:
             self.button["state"] = "normal"
 
+
     # update text in panel when user clicks button
     def update_panel(self, results):
+
+        global theme
+
+        if theme == 1: #light theme
+            panel_colour = "#FFFFFF"
+            panel_text_colour = "#c73e08"
+
+        elif theme == 2: #dark theme
+            panel_colour = "#243447"
+            panel_text_colour = "#ffffff"
+
+
         #multiply and round all entries of the results array
         results = [str(round(i * 100, 2)) for i in results]
         # text = "{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n".format('--', '--', '--', '--', '--', '--', '--', '--')
         text = "{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n".format(results[0], results[1], results[2], results[3], results[4], results[5], results[6], results[7])
-        self.result_text = tk.Label(self.panel, text=text, bg=PANEL_COLOUR, fg=PANEL_TEXT_COLOUR, font=FONT, justify="right")
+        self.result_text = tk.Label(self.panel, text=text, bg=panel_colour, fg=panel_text_colour, font=FONT, justify="right")
         self.result_text.grid(row=1, column=1, sticky="e", padx=15)
+
 
     # define button click event handler
     def button_click(self):
@@ -175,8 +221,6 @@ class App(tk.Frame):
             self.button["state"] = "normal"
             scores = self.predict_sentiment(self.model, self.textbox.get("1.0", "end"))
             self.update_panel(scores)
-            # self.get_output(self.textbox.get("1.0", "end"))
-            # print(self.textbox.get("1.0", "end"))
 
 
     def load_word_arrays(self):
@@ -226,6 +270,7 @@ class App(tk.Frame):
         return tweet.lower().split()
 
     def predict_sentiment(self, net, sentence):
+        
         idxs = [self.word_to_index[w]        # lookup the index of word
                         for w in self.split_tweet(sentence)
                         if w in self.word_to_index] # keep words that has an embedding
@@ -298,6 +343,13 @@ class NETWORK(nn.Module):
         hidden = self.relu(self.fc1(hidden))
         return self.fc2(hidden)
 
+
+FONT = ("Cambria", 12)
+TTLE_FONT = ("Cambria", 16)
+
+theme = 1
+
 root = tk.Tk()
 app = App(master=root)
+# menubar = MenuBar(root, app)
 app.mainloop()
