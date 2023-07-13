@@ -32,9 +32,9 @@ class App(tk.Frame):
         self.load_word_arrays()
 
         #load pretrained model
-        model_path = os.path.realpath(os.path.join(os.getcwd(), 'frontend\\model.pth'))
+        model_path = os.path.realpath(os.path.join(os.getcwd(), 'model.pth'))
         self.model = self.load_network()
-        self.model.load_state_dict(torch.load(model_path))
+        self.model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
         self.model.eval
 
     def create_menu(self):
