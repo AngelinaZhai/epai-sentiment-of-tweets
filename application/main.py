@@ -14,29 +14,30 @@ class App(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
         self.master = master
-        #ensure window is not resizable
+        # ensure window is not resizable
         self.master.resizable(False, False)
         self.pack()
         self.create_menu()
         self.create_widgets()
 
-        #create event handler for textbox
+        # create event handler for textbox
         self.textbox.bind("<Key>", self.count_text)
 
-        #create event handler for button
+        # create event handler for button
         self.button["command"] = self.button_click
 
-        #load in lists for words + indices
+        # load in lists for words + indices
         self.index_to_word = {}
         self.word_to_index = {}
         self.load_word_arrays()
 
-        #load pretrained model
+        # load pretrained model
         model_path = os.path.realpath(os.path.join(os.getcwd(), 'model.pth'))
         self.model = self.load_network()
         self.model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
         self.model.eval
 
+    # Create menu bar to switch between light and dark modes
     def create_menu(self):
         self.menubar = tk.Menu(self.master)
         self.master.config(menu=self.menubar)
@@ -46,6 +47,7 @@ class App(tk.Frame):
         visualMenu.add_command(label = "Dark Mode", command = self.to_dark)
         self.menubar.add_cascade(label = "Appearance", menu = visualMenu)
 
+    # switches the theme to light mode
     def to_light(self):
         global theme
         
@@ -56,6 +58,7 @@ class App(tk.Frame):
             self.destroy()
             self.__init__(self.master)
 
+    # switches the theme to dark mode
     def to_dark(self):
         global theme
         
@@ -66,9 +69,10 @@ class App(tk.Frame):
             self.destroy()
             self.__init__(self.master)
 
+    # creates the widgets for the UI
     def create_widgets(self):
 
-        #calling global variables
+        # calling global variables
         # global textbox_colour, textbox_border, textbox_text_colour, button_colour, button_text_colour, panel_colour, panel_text_colour
         global theme
 
@@ -83,7 +87,6 @@ class App(tk.Frame):
 
         elif theme == 2: #dark theme
             textbox_colour = "#eff3f4"
-            # TEXTBOX_COLOUR = "#081f30"
             textbox_border = "#1d9bf0"
             textbox_text_colour = "#18222e"
             button_colour = "#f75b2f"
@@ -93,7 +96,7 @@ class App(tk.Frame):
 
 
 
-        #change the title of the window
+        # change the title of the window
         self.master.title("Twitter Sentiment Analysis")
 
         self.textbox = tk.Text(self, width=48, fg = textbox_text_colour, bg=textbox_colour, font=FONT)
@@ -105,32 +108,32 @@ class App(tk.Frame):
         self.label.grid(row=4, column=1, sticky="we")
 
 
-        #create a button
+        # create a button
         self.button = button(self, text="Analyze", command=self.print_text, bg=button_colour, highlightbackground=panel_colour, fg=button_text_colour, font=FONT, borderless=1)
-        #configure the button to be in the 4th row and 0th column, on the left side
+        # configure the button to be in the 4th row and 0th column, on the left side
         self.button.grid(row=4, column=1, sticky="e", pady=5)
 
 
-        #create a panel to the right of the textbox with grid layout
+        # create a panel to the right of the textbox with grid layout
         self.panel = tk.Frame(self)
         self.panel.grid(row=0, column=3, rowspan=3, sticky="nsew")
         
 
-        #create a title for the panel
+        # create a title for the panel
         self.panel_title = tk.Label(self.panel, text="Summary of Analysis")
-        #add padding to the title
+        # add padding to the title
         self.panel_title.grid(row=0, column=0, columnspan=2, sticky="we", padx=15, pady=15)
 
 
-        #create a string to display classification labels in the panel
+        # create a string to display classification labels in the panel
         text = "Respect: \n\nInsult: \n\nHumiliate: \n\nStatus: \n\nDehumanize:\n\nViolence:\n\nGenocide:\n\nAttack Defend:\n\n"
-        #create a label to display the text
+        # create a label to display the text
         self.panel_text = tk.Label(self.panel, text=text, bg=panel_colour, fg=panel_text_colour, font=FONT, justify="left")
-        #add the label to the panel
+        # add the label to the panel
         self.panel_text.grid(row=1, column=0, sticky="w", padx=15)
 
 
-        #set background color of elements
+        # set background color of elements
         self["bg"] = panel_colour
 
         self.label["bg"] = panel_colour
@@ -141,7 +144,7 @@ class App(tk.Frame):
         self.textbox["highlightbackground"] = textbox_border
         self.textbox["fg"] = textbox_text_colour
         self.textbox["highlightthickness"] = 3
-        self.textbox["borderwidth"] = 15 #padding around the text inside the textbox
+        self.textbox["borderwidth"] = 15 # padding around the text inside the textbox
         self.textbox["font"] = FONT
 
         self.panel["bg"] = panel_colour
@@ -151,19 +154,19 @@ class App(tk.Frame):
         self.panel_title["font"] = TTLE_FONT
 
 
-    #print the text in the textbox to the console when the button is clicked
+    # print the text in the textbox to the console when the button is clicked
     def print_text(self):
         text = self.textbox.get("1.0", "end")
         self.count_text()
 
 
-    #update counter as the user types
+    # update counter as the user types
     def count_text(self, event=None):
-        #get the text from the textbox
+        # get the text from the textbox
         text = self.textbox.get("1.0", "end")
-        #count the number of characters in the text
+        # count the number of characters in the text
         count = len(text)
-        #display the number of characters in the label
+        # display the number of characters in the label
         self.label["text"] = str(count)+" / 280"
 
         #disable button if character count is greater than 280
@@ -174,16 +177,16 @@ class App(tk.Frame):
         return count
     
 
-    #retrieve output from model using the text 
+    # retrieve output from model using the text 
     def get_output(self, text):
-        #convert text to tensor
+        # convert text to tensor
         tensor = self.text_to_tensor(text)
-        #get output from model
+        # get output from model
         output = self.model(tensor)
         print (output)
 
 
-    #disable button if character count is greater than 280
+    # disable button if character count is greater than 280
     def disable_button(self, event=None):
         if self.count_text() > 280:
             self.button["state"] = "disabled"
@@ -196,18 +199,17 @@ class App(tk.Frame):
 
         global theme
 
-        if theme == 1: #light theme
+        if theme == 1: # light theme
             panel_colour = "#FFFFFF"
             panel_text_colour = "#c73e08"
 
-        elif theme == 2: #dark theme
+        elif theme == 2: # dark theme
             panel_colour = "#243447"
             panel_text_colour = "#ffffff"
 
 
-        #multiply and round all entries of the results array
+        # multiply and round all entries of the results array
         results = [str(round(i * 100, 2)) for i in results]
-        # text = "{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n".format('--', '--', '--', '--', '--', '--', '--', '--')
         text = "{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n".format(results[0], results[1], results[2], results[3], results[4], results[5], results[6], results[7])
         self.result_text = tk.Label(self.panel, text=text, bg=panel_colour, fg=panel_text_colour, font=FONT, justify="right")
         self.result_text.grid(row=1, column=1, sticky="e", padx=15)
@@ -223,15 +225,15 @@ class App(tk.Frame):
             self.update_panel(scores)
 
 
+    # load index-to-word and word-to-index arrays from pickle files
     def load_word_arrays(self):
-        #create appropriate paths
+        # create appropriate paths
         iw_loc = os.path.realpath(os.path.join(os.getcwd(), 'index_to_word.pkl'))
         wi_loc = os.path.realpath(os.path.join(os.getcwd(), 'word_to_index.pkl'))
 
         with open(iw_loc, 'rb') as f:
             while True:
                 try:
-                    # index_to_word.append(pickle.load(f))
                     self.index_to_word = pickle.load(f)
                 except EOFError:
                     break
@@ -239,7 +241,6 @@ class App(tk.Frame):
         with open(wi_loc, 'rb') as f:
             while True:
                 try:
-                    # word_to_index.append(pickle.load(f))
                     self.word_to_index = pickle.load(f)
                 except EOFError:
                     break
@@ -247,20 +248,20 @@ class App(tk.Frame):
         print("Successfully loaded info arrays.")
 
 
+    # load and return a specified network architecture
     def load_network(self):
-        NETWORK_TYPE = 'GRU' #specify the specific network type
-        INPUT_DIM=int(len(self.word_to_index)) #size of the vocabulary (number of words, arbitrary, but 10k is a good number)
-        # EMBEDDING_DIM = 8 #size of the word embeddings
+        NETWORK_TYPE = 'GRU' # specify the specific network type
+        INPUT_DIM=int(len(self.word_to_index)) # size of the vocabulary (number of words, arbitrary, but 10k is a good number)
         EMBEDDING_DIM = 256
-        # HIDDEN_DIM = 8 #size of the hidden layer
         HIDDEN_DIM = 100
-        OUTPUT_DIM = 8 #size of the output layer. Fixed to 8 for this project
-        N_LAYERS = 2 #number of stacked RNN type layers. Please note that this is not the number of layers in the network. Only use 1 or 2 or else the network becomes too complex
-        BIDIRECTIONAL = True #whether to use a bidirectional network
+        OUTPUT_DIM = 8 # size of the output layer. Fixed to 8 for this project
+        N_LAYERS = 2 # number of stacked RNN type layers. Please note that this is not the number of layers in the network. Only use 1 or 2 or else the network becomes too complex
+        BIDIRECTIONAL = True # whether to use a bidirectional network
         DROPOUT = 0.35 
         return NETWORK(NETWORK_TYPE, INPUT_DIM, EMBEDDING_DIM, HIDDEN_DIM, OUTPUT_DIM, N_LAYERS, BIDIRECTIONAL, DROPOUT)
 
 
+    # split tweet into a list of words (punctuation is preserved)
     def split_tweet(self, tweet):
         # separate punctuations
         tweet = tweet.replace(".", " . ") \
@@ -269,16 +270,16 @@ class App(tk.Frame):
                     .replace("?", " ? ")
         return tweet.lower().split()
 
+    # predict the sentiment for a given sentence using the provided neural network.
     def predict_sentiment(self, net, sentence):
         
         idxs = [self.word_to_index[w]        # lookup the index of word
                         for w in self.split_tweet(sentence)
                         if w in self.word_to_index] # keep words that has an embedding
-        # print(idxs)
         tensor = torch.tensor(idxs)  # convert sentence to tensor
         tensor = tensor.unsqueeze(0)  # change shape from [n_words] to [n_words, 1]
         output = net(tensor)  # get predictions from network
-        #convert to probabilities
+        # convert to probabilities
         output = torch.sigmoid(output)
         
         return output.tolist()[0]
@@ -320,7 +321,6 @@ class NETWORK(nn.Module):
         self.fc = nn.Linear(hidden_dim*n_layers, 256)
         self.fc1 = nn.Linear(256, 64)
         self.fc2 = nn.Linear(64, output_dim)
-        # self.fc_out = nn.Linear(hidden_dim*(2 if bidirectional else 1), output_dim)
         self.relu = nn.ReLU()
         self.dropout = nn.Dropout(dropout)
         
@@ -328,13 +328,11 @@ class NETWORK(nn.Module):
     # return: torch.Tensor
     # forward pass of the neural network
     def forward(self, text):
-        # embedded = self.dropout(self.embedding(text))
         embedded = self.embedding(text)
         if self.type == "LSTM":
             output, (hidden, cell) = self.rnn(embedded)
         elif self.type == "GRU":
             output, hidden = self.rnn(embedded)
-        # hidden = self.dropout(torch.cat((hidden[-2,:,:], hidden[-1,:,:]), dim = 1))
         if self.layers == 1:
            hidden = self.dropout(hidden[0:,:])
         else:
@@ -351,5 +349,4 @@ theme = 1
 
 root = tk.Tk()
 app = App(master=root)
-# menubar = MenuBar(root, app)
 app.mainloop()
