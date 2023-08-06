@@ -209,8 +209,11 @@ class App(tk.Frame):
 
 
         # multiply and round all entries of the results array
-        results = [str(round(i * 100, 2)) for i in results]
-        text = "{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n".format(results[0], results[1], results[2], results[3], results[4], results[5], results[6], results[7])
+        if len(results) == 0:
+            text = "{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n".format("--", "--", "--", "--", "--", "--", "--", "--")
+        else:
+            results = [str(round(i * 100, 2)) for i in results]
+            text = "{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n".format(results[0], results[1], results[2], results[3], results[4], results[5], results[6], results[7])
         self.result_text = tk.Label(self.panel, text=text, bg=panel_colour, fg=panel_text_colour, font=FONT, justify="right")
         self.result_text.grid(row=1, column=1, sticky="e", padx=15)
 
@@ -279,10 +282,13 @@ class App(tk.Frame):
         tensor = torch.tensor(idxs)  # convert sentence to tensor
         tensor = tensor.unsqueeze(0)  # change shape from [n_words] to [n_words, 1]
         output = net(tensor)  # get predictions from network
-        # convert to probabilities
-        output = torch.sigmoid(output)
-        
-        return output.tolist()[0]
+
+        if len(output) != 0:
+            # convert to probabilities
+            output = torch.sigmoid(output)
+            return output.tolist()[0]
+        else:
+            return []
 
 
 class NETWORK(nn.Module):
@@ -328,18 +334,21 @@ class NETWORK(nn.Module):
     # return: torch.Tensor
     # forward pass of the neural network
     def forward(self, text):
-        embedded = self.embedding(text)
-        if self.type == "LSTM":
-            output, (hidden, cell) = self.rnn(embedded)
-        elif self.type == "GRU":
-            output, hidden = self.rnn(embedded)
-        if self.layers == 1:
-           hidden = self.dropout(hidden[0:,:])
-        else:
-            hidden = self.dropout(torch.cat((hidden[-2,:,:], hidden[-1,:,:]), dim = 1))
-        hidden = self.relu(self.fc(hidden))
-        hidden = self.relu(self.fc1(hidden))
-        return self.fc2(hidden)
+        try:
+            embedded = self.embedding(text)
+            if self.type == "LSTM":
+                output, (hidden, cell) = self.rnn(embedded)
+            elif self.type == "GRU":
+                output, hidden = self.rnn(embedded)
+            if self.layers == 1:
+                hidden = self.dropout(hidden[0:,:])
+            else:
+                hidden = self.dropout(torch.cat((hidden[-2,:,:], hidden[-1,:,:]), dim = 1))
+            hidden = self.relu(self.fc(hidden))
+            hidden = self.relu(self.fc1(hidden))
+            return self.fc2(hidden)
+        except:
+            return []
 
 
 FONT = ("Cambria", 12)
