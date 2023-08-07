@@ -214,7 +214,7 @@ class App(tk.Frame):
 
         if len(results) == 0:
             # text = "{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n".format("--", "--", "--", "--", "--", "--", "--", "--")
-            results = ["  --" for i in range(0,8)]
+            results = ["        -- " for i in range(0,8)]
         else:
             # multiply and round all entries of the results array
             results = [str(round(i * 100, 2)) for i in results]
