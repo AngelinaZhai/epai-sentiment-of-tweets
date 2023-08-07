@@ -208,12 +208,13 @@ class App(tk.Frame):
             panel_text_colour = "#ffffff"
 
 
-        # multiply and round all entries of the results array
         if len(results) == 0:
-            text = "{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n".format("--", "--", "--", "--", "--", "--", "--", "--")
+            # text = "{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n".format("--", "--", "--", "--", "--", "--", "--", "--")
+            results = ["  --" for i in range(0,8)]
         else:
+            # multiply and round all entries of the results array
             results = [str(round(i * 100, 2)) for i in results]
-            text = "{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n".format(results[0], results[1], results[2], results[3], results[4], results[5], results[6], results[7])
+        text = "{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n{}%\n\n".format(results[0], results[1], results[2], results[3], results[4], results[5], results[6], results[7])
         self.result_text = tk.Label(self.panel, text=text, bg=panel_colour, fg=panel_text_colour, font=FONT, justify="right")
         self.result_text.grid(row=1, column=1, sticky="e", padx=15)
 
