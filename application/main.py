@@ -21,7 +21,7 @@ class App(tk.Frame):
         self.create_widgets()
 
         # create event handler for textbox
-        self.textbox.bind("<Key>", self.count_text)
+        self.textbox.bind("<KeyPress>", self.count_text)
 
         # create event handler for button
         self.button["command"] = self.button_click
@@ -112,6 +112,7 @@ class App(tk.Frame):
         self.button = button(self, text="Analyze", command=self.print_text, bg=button_colour, highlightbackground=panel_colour, fg=button_text_colour, font=FONT, borderless=1)
         # configure the button to be in the 4th row and 0th column, on the left side
         self.button.grid(row=4, column=1, sticky="e", pady=5)
+        self.button["state"] = "disabled" #state is disabled on start
 
 
         # create a panel to the right of the textbox with grid layout
@@ -165,12 +166,23 @@ class App(tk.Frame):
         # get the text from the textbox
         text = self.textbox.get("1.0", "end")
         # count the number of characters in the text
-        count = len(text)
+        if event and event.keysym in ('Delete', 'BackSpace'):
+            count = len(text)-2
+        elif event and not event.char:
+            count = len(text)-1
+        elif event == None:
+            count = len(text)-1
+        else:
+            count = len(text)
+
+        if count < 0:
+            count = 0
+
         # display the number of characters in the label
         self.label["text"] = str(count)+" / 280"
 
         #disable button if character count is greater than 280
-        if count > 280:
+        if count > 280 or count == 0:
             self.button["state"] = "disabled"
         else:
             self.button["state"] = "normal"
@@ -184,14 +196,6 @@ class App(tk.Frame):
         # get output from model
         output = self.model(tensor)
         print (output)
-
-
-    # disable button if character count is greater than 280
-    def disable_button(self, event=None):
-        if self.count_text() > 280:
-            self.button["state"] = "disabled"
-        else:
-            self.button["state"] = "normal"
 
 
     # update text in panel when user clicks button
