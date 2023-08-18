@@ -23,12 +23,17 @@ Though the quantitative result is promising, qualitative testing has exposed sev
 NOTE: If your computer shows warnings for the application being from an unidentified developer, follow the steps below
 
 Mac:
+
 Go to Settings -> Privacy & Security, and select “Open Anyway”
+
 ![Mac open anyway screen](images/mac_block.png)
 
 Windows: 
+
 Select “More Info”
+
 ![Windows more info screen](images/windows_more_info.png)
 
 Select “Run Anyway”
+
 ![Windows run anyway screen](images/windows_run.png)
