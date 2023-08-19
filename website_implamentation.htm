@@ -14,6 +14,11 @@ h1, h2, h3, h4, h5, h6 {
   font-family: "Playfair Display";
   letter-spacing: 5px;
 }
+img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
 </style>
 </head>
 <body>
@@ -27,10 +32,10 @@ h1, h2, h3, h4, h5, h6 {
   <div class="w3-padding-32">
 
     <div class="w3-bar w3-border">
-      <a href="#intro" class="w3-bar-item w3-button w3-padding-large w3-border w3-border-white w3-hover-pale-blue">Introduction</a>
-      <a href="#project" class="w3-bar-item w3-button w3-padding-large w3-border w3-border-white w3-hover-pale-blue">Our Project</a>
-      <a href="#download" class="w3-bar-item w3-button w3-padding-large w3-border w3-border-white w3-hover-pale-blue">Download</a>
-      <a href="#team" class="w3-bar-item w3-button w3-padding-large w3-border w3-border-white w3-hover-pale-blue">Our Team</a>
+      <a href="#intro" class="w3-bar-item w3-button w3-padding-16 w3-border w3-border-white w3-hover-pale-blue">Introduction</a>
+      <a href="#project" class="w3-bar-item w3-button w3-padding-16 w3-border w3-border-white w3-hover-pale-blue">Our Project</a>
+      <a href="#download" class="w3-bar-item w3-button w3-padding-16 w3-border w3-border-white w3-hover-pale-blue">Download</a>
+      <a href="#team" class="w3-bar-item w3-button w3-padding-16 w3-border w3-border-white w3-hover-pale-blue">Our Team</a>
     </div>
 
   </div>
@@ -45,34 +50,41 @@ h1, h2, h3, h4, h5, h6 {
   <!-- Introduction Section -->
   <div class="w3-container" id="intro">
     <h1 style="color:orange;">Introduction</h1><br>
-    <p>Toxic posts, abuse, accusation, attack, and hateful language have become regular phenomena. One way to contain such posts is through content moderation. But the bigger problem with hate speeches is that they are hard to contain when they go into the internet, especially on popular social media platforms. In this project, we ask, can we design something to contain harmful posts even before a user posts them online? To answer this question, we have created an application for hate speech detection using NLP models.</p>
+  </div>
+
+  <div class="w3-row w3-padding-32">
+
+    <div class="w3-half w3-container">
+      <p>Toxic posts, abuse, accusation, attack, and hateful language have become regular phenomena. One way to contain such posts is through content moderation. But the bigger problem with hate speeches is that they are hard to contain when they go into the internet, especially on popular social media platforms. In this project, we ask, can we design something to contain harmful posts even before a user posts them online? To answer this question, we have created an application for hate speech detection using NLP models.</p>
+    </div>
+
+    <div class="w3-half w3-container">
+      <iframe width="520" height="292.5" src="https://github.com/AngelinaZhai/epai-sentiment-of-tweets/blob/main/video_demo.mov?raw=true"></iframe>
+    </div>
+
   </div>
   
   <!-- Our Project Section -->
-  <div class="w3-half w3-container" id="project">
+  <div class="w3-container" id="project">
     <h1 style="color:orange;">Our Project</h1><br>
-  </div>
-    
-  <!-- Demo Section -->
-  <div class="w3-container">
-    <h4 style="color:orange;">Video Demo</h4>
-    <iframe width="520" height="292.5" src="https://github.com/AngelinaZhai/epai-sentiment-of-tweets/blob/main/video_demo.mov?raw=true">
-    </iframe>
   </div>
 
   <!-- Dataset Section-->
+  <div class="w3-half w3-container">
+  </div>
+
   <div class="w3-half w3-container">
     <h4 style="color:orange;">Dataset</h4>
   </div>
 
   <div class="w3-row w3-padding-32">
 
-    <div class="w3-half w3-container">
-      <p>The <a href="https://huggingface.co/datasets/ucberkeley-dlab/measuring-hate-speech" title="Measuring Hate Speech Dataset" target="_blank" class="w3-text-light-blue w3-hover-text-orange">Measuring Hate Speech Dataset</a> from UC Berkeley was used and contains 39,565 comments from Youtube, Reddit and Twitter. After cleaning, each comment is between 4 and 600 characters long. 7,912 annotators went through the comments and for each, indicated any identities described, and evaluated 10 labels. The labels we used were Respect, Insult, Humiliate, Status, Dehumanize, Violence, Genocide, and Attack Defend. Respect describes whether the comment was respectful towards the group(s) in the comment. Insult describes whether the comment was insulting the group(s) mentioned. Humiliate describes whether the comment was humiliating the group(s) mentioned. Dehumanize describes whether the comment dehumanized the group(s) mentioned. Violence describes whether the comment called for using violence against the group(s) mentioned. Genocide describes whether the comment calls for the deliberate killing of the group(s) mentioned. Aside from Status and Attack-Defend, each label was an ordinal Likert-style variable with 5 response options: strongly disagree, disagree, neutral, agree, strongly agree. Status describes whether the comment describes the group(s) in the comment as strongly inferior, inferior, neutral, superior, or strongly superior, and Attack-Defend describes whether the comment was strongly defending, defending, neutral, supporting, or strongly supporting the group(s) mentioned. For each label, all the ratings of the label were combined into a continuous score for each comment.</p>
+    <div class="w3-half w3-container" id="histograms">
+      <img src="https://github.com/AngelinaZhai/epai-sentiment-of-tweets/blob/main/images/histograms_of_data.png?raw=true" class="w3-round w3-image w3-opacity-min" alt="Histograms of Data" style="width:100%">
     </div>
 
     <div class="w3-half w3-container">
-      <img src="https://github.com/AngelinaZhai/epai-sentiment-of-tweets/blob/main/images/histograms_of_data.png?raw=true" class="w3-round w3-image w3-opacity-min" alt="Histograms of Data" style="width:100%">
+      <p>The <a href="https://huggingface.co/datasets/ucberkeley-dlab/measuring-hate-speech" title="Measuring Hate Speech Dataset" target="_blank" class="w3-text-light-blue w3-hover-text-orange">Measuring Hate Speech Dataset</a> from UC Berkeley was used and contains 39,565 comments from Youtube, Reddit and Twitter. After cleaning, each comment is between 4 and 600 characters long. 7,912 annotators went through the comments and for each, indicated any identities described, and evaluated 10 labels. The labels we used were Respect, Insult, Humiliate, Status, Dehumanize, Violence, Genocide, and Attack Defend. Respect describes whether the comment was respectful towards the group(s) in the comment. Insult describes whether the comment was insulting the group(s) mentioned. Humiliate describes whether the comment was humiliating the group(s) mentioned. Dehumanize describes whether the comment dehumanized the group(s) mentioned. Violence describes whether the comment called for using violence against the group(s) mentioned. Genocide describes whether the comment calls for the deliberate killing of the group(s) mentioned. Aside from Status and Attack-Defend, each label was an ordinal Likert-style variable with 5 response options: strongly disagree, disagree, neutral, agree, strongly agree. Status describes whether the comment describes the group(s) in the comment as strongly inferior, inferior, neutral, superior, or strongly superior, and Attack-Defend describes whether the comment was strongly defending, defending, neutral, supporting, or strongly supporting the group(s) mentioned. For each label, all the ratings of the label were combined into a continuous score for each comment.</p>
     </div>
 
   </div>
@@ -84,6 +96,9 @@ h1, h2, h3, h4, h5, h6 {
   </div>
 
   <!-- Model & Results Section-->
+  <div class="w3-half w3-container">
+  </div>
+
   <div class="w3-half w3-container">
     <h4 style="color:orange;">Model & Results</h4>
   </div>
@@ -103,7 +118,7 @@ h1, h2, h3, h4, h5, h6 {
   <!-- Limitations & Future Improvements Section-->
   <div class="w3-container">
     <h4 style="color:orange;">Limitations & Future Improvements</h4>
-    <p>Though the quantitative result is promising, qualitative testing has exposed several limitations of the model. For starters, due to our customized word embeddings, if the model receives words that did not exist in the data set, it will ignore that word; this means that if the user makes any typos, uses any slangs that are recently invented, etc., the result will be less accurate since the model will not be able to capture the sentiment of words it does not recognize. Secondly, the model produces more accurate scores when the inputted text is longer. This phenomenon could be caused by the nature of the training data, and could be potentially improved with more training data containing short text. Lastly, due to the stochastic nature of the model, the sentiment scores will fluctuate when the model analyzes the same body of text; based on qualitative observations, in categories where the distribution of scores are not even, such as Violence and Genocide, the score fluctuation could be as high as 15%, while categories with an even distribution such as Humiliate and Dehumanize produces smaller fluctuations (see histograms below). This behaviour could be improved by balancing the distribution in the data processing stage, though this could prove difficult since there exist relationships between the categories. For instance, the categories Violence and Genocide are intrinsically linked, as well, Attack Defend is usually the opposite of Insult. It will be difficult to balance one category without visibly impacting other training categories.</p>
+    <p>Though the quantitative result is promising, qualitative testing has exposed several limitations of the model. For starters, due to our customized word embeddings, if the model receives words that did not exist in the data set, it will ignore that word; this means that if the user makes any typos, uses any slangs that are recently invented, etc., the result will be less accurate since the model will not be able to capture the sentiment of words it does not recognize. Secondly, the model produces more accurate scores when the inputted text is longer. This phenomenon could be caused by the nature of the training data, and could be potentially improved with more training data containing short text. Lastly, due to the stochastic nature of the model, the sentiment scores will fluctuate when the model analyzes the same body of text; based on qualitative observations, in categories where the distribution of scores are not even, such as Violence and Genocide, the score fluctuation could be as high as 15%, while categories with an even distribution such as Humiliate and Dehumanize produces smaller fluctuations (see histograms <a href="#histograms" class="w3-text-light-blue w3-hover-text-orange">here</a>). This behaviour could be improved by balancing the distribution in the data processing stage, though this could prove difficult since there exist relationships between the categories. For instance, the categories Violence and Genocide are intrinsically linked, as well, Attack Defend is usually the opposite of Insult. It will be difficult to balance one category without visibly impacting other training categories.</p>
   </div>
 
   <!-- Github Section -->
@@ -125,7 +140,7 @@ h1, h2, h3, h4, h5, h6 {
       <div class="w3-row" id="">
         <p>Mac:</p>
         <p>Go to Settings -> Privacy & Security, and select “Open Anyway”</p>
-        <img src="https://github.com/AngelinaZhai/epai-sentiment-of-tweets/blob/main/images/mac_block.png?raw=true" class="w3-round w3-image w3-opacity-min" alt="mac instruction" style="width:100%">
+        <img src="https://github.com/AngelinaZhai/epai-sentiment-of-tweets/blob/main/images/mac_block.png?raw=true" class="w3-round w3-image w3-opacity-min" alt="mac instruction" style="width:60%">
       </div>
 
       <div class="w3-row" id="">
@@ -133,12 +148,12 @@ h1, h2, h3, h4, h5, h6 {
 
         <div class="w3-half w3-container" style="width:50%">
           <p>1. Select “More Info”</p>
-          <img src="https://github.com/AngelinaZhai/epai-sentiment-of-tweets/blob/main/images/windows_more_info.png?raw=true" class="w3-round w3-image w3-opacity-min" alt="windows instruction 1" style="width:100%">
+          <img src="https://github.com/AngelinaZhai/epai-sentiment-of-tweets/blob/main/images/windows_more_info_white.png?raw=true" class="w3-round w3-image w3-opacity-min" alt="windows instruction 1" style="width:100%">
         </div>
 
         <div class="w3-half w3-container" style="width:50%">
           <p>2. Select “Run Anyway”</p>
-          <img src="https://github.com/AngelinaZhai/epai-sentiment-of-tweets/blob/main/images/windows_run.png?raw=true" class="w3-round w3-image w3-opacity-min" alt="windows instruction 2" style="width:100%">
+          <img src="https://github.com/AngelinaZhai/epai-sentiment-of-tweets/blob/main/images/windows_run_white.png?raw=true" class="w3-round w3-image w3-opacity-min" alt="windows instruction 2" style="width:100%">
         </div>
 
       </div>
@@ -151,20 +166,25 @@ h1, h2, h3, h4, h5, h6 {
   <div class="w3-container w3-padding-32" id="team">
     <h1 style="color:orange;">Our Team</h1><br>
 
-     <div class="w3-col w3-center" style="width:33%">
-        <h4><b>Angelina Zhai</b></h4>
-        <p>Project Lead</p>
-     </div>
+    <div class="w3-col w3-center" style="width:25%">
+      <h4><b>Angelina Zhai</b></h4>
+      <p>Project Lead</p>
+    </div>
 
-     <div class="w3-col w3-center" style="width:33%">
-        <h4><b>Dian Rong</b></h4>
-        <p>Backend Developer</p>
-     </div>
+    <div class="w3-col w3-center" style="width:25%">
+      <h4><b>Dian Rong</b></h4>
+      <p>Backend Developer</p>
+    </div>
 
-     <div class="w3-col w3-center" style="width:33%">
-        <h4><b>Kathy Lin</b></h4>
-        <p>Webmaster & Backend Developer</p>
-     </div>
+    <div class="w3-col w3-center" style="width:25%">
+      <h4><b>Kathy Lin</b></h4>
+      <p>Webmaster & Backend Developer</p>
+    </div>
+
+    <div class="w3-col w3-center" style="width:25%">
+      <h4><b>Akriti Sharma</b></h4>
+      <p>Project Researcher</p>
+    </div>
 
   </div>
 
