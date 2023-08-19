@@ -61,17 +61,21 @@ h1, h2, h3, h4, h5, h6 {
   </div>
 
   <!-- Dataset Section-->
+  <div class="w3-half w3-container">
+    <h4 style="color:orange;">Dataset</h4>
+  </div>
+
   <div class="w3-row w3-padding-32">
 
     <div class="w3-half w3-container">
-      <h4 style="color:orange;">Dataset</h4>
       <p>The <a href="https://huggingface.co/datasets/ucberkeley-dlab/measuring-hate-speech" title="Measuring Hate Speech Dataset" target="_blank" class="w3-text-light-blue w3-hover-text-orange">Measuring Hate Speech Dataset</a> from UC Berkeley was used and contains 39,565 comments from Youtube, Reddit and Twitter. After cleaning, each comment is between 4 and 600 characters long. 7,912 annotators went through the comments and for each, indicated any identities described, and evaluated 10 labels. The labels we used were Respect, Insult, Humiliate, Status, Dehumanize, Violence, Genocide, and Attack Defend. Respect describes whether the comment was respectful towards the group(s) in the comment. Insult describes whether the comment was insulting the group(s) mentioned. Humiliate describes whether the comment was humiliating the group(s) mentioned. Dehumanize describes whether the comment dehumanized the group(s) mentioned. Violence describes whether the comment called for using violence against the group(s) mentioned. Genocide describes whether the comment calls for the deliberate killing of the group(s) mentioned. Aside from Status and Attack-Defend, each label was an ordinal Likert-style variable with 5 response options: strongly disagree, disagree, neutral, agree, strongly agree. Status describes whether the comment describes the group(s) in the comment as strongly inferior, inferior, neutral, superior, or strongly superior, and Attack-Defend describes whether the comment was strongly defending, defending, neutral, supporting, or strongly supporting the group(s) mentioned. For each label, all the ratings of the label were combined into a continuous score for each comment.</p>
     </div>
 
     <div class="w3-half w3-container">
       <img src="https://github.com/AngelinaZhai/epai-sentiment-of-tweets/blob/main/images/histograms_of_data.png?raw=true" class="w3-round w3-image w3-opacity-min" alt="Histograms of Data" style="width:100%">
     </div>
-</div>
+
+  </div>
 
   <!-- Data Processing Section-->
   <div class="w3-container">
@@ -80,15 +84,18 @@ h1, h2, h3, h4, h5, h6 {
   </div>
 
   <!-- Model & Results Section-->
+  <div class="w3-half w3-container">
+    <h4 style="color:orange;">Model & Results</h4>
+  </div>
+
   <div class="w3-row w3-padding-32">
 
     <div class="w3-half w3-container">
-      <h4 style="color:orange;">Model & Results</h4>
-      <p>Using the processed data, we have experimented with three models: basic RNN, LSTM, and GRU. Out of the three models, RNN was first trained, though the model had trouble learning in later epochs, and the validation accuracy was capped at around 30%. Though tweets are short by nature and limited by a character count, our dataset contained longer comments, so we still decided to try out models with long-term memories; indeed, an LSTM model was able to capture the long term dependencies and obtain an F1 test accuracy score of around 50%. Further experiments and fine-tuning with the GRU model presented the best results with the F1 test accuracy of 60%.</p><br> 
+      <img src="https://github.com/AngelinaZhai/epai-sentiment-of-tweets/blob/main/images/validation_graph.png?raw=true" class="w3-round w3-image w3-opacity-min" alt="Validation Graph" style="width:100%">
     </div>
 
     <div class="w3-half w3-container">
-      <img src="https://github.com/AngelinaZhai/epai-sentiment-of-tweets/blob/main/images/validation_graph.png?raw=true" class="w3-round w3-image w3-opacity-min" alt="Validation Graph" style="width:100%">
+      <p>Using the processed data, we have experimented with three models: basic RNN, LSTM, and GRU. Out of the three models, RNN was first trained, though the model had trouble learning in later epochs, and the validation accuracy was capped at around 30%. Though tweets are short by nature and limited by a character count, our dataset contained longer comments, so we still decided to try out models with long-term memories; indeed, an LSTM model was able to capture the long term dependencies and obtain an F1 test accuracy score of around 50%. Further experiments and fine-tuning with the GRU model presented the best results with the F1 test accuracy of 60%.</p><br> 
     </div>
 
   </div>
