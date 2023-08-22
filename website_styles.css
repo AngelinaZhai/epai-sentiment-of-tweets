@@ -16,6 +16,16 @@ img {
     margin-left: auto;
     margin-right: auto;
 }
+
+.link-bar {
+  display: block;
+}
+
+@media (max-width: 525px) {
+  .link-bar {
+    display: none;
+  }
+}
   
 .video-container {
     position: relative;
